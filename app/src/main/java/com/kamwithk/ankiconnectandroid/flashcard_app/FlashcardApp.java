@@ -6,7 +6,7 @@ package com.kamwithk.ankiconnectandroid.flashcard_app;
  */
 public enum FlashcardApp {
     ANKIDROID("com.ichi2.anki"),
-    ANKIQUEST("dev.hilll.anki");
+    ANKIQUEST("org.ankiquest.anki");
 
     public static final FlashcardApp DEFAULT = ANKIDROID;
 
