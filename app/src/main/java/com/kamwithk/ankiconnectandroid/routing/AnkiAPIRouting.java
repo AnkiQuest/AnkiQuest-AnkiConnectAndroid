@@ -9,6 +9,7 @@ import com.kamwithk.ankiconnectandroid.ankidroid_api.DeckAPI;
 import com.kamwithk.ankiconnectandroid.ankidroid_api.IntegratedAPI;
 import com.kamwithk.ankiconnectandroid.ankidroid_api.MediaAPI;
 import com.kamwithk.ankiconnectandroid.ankidroid_api.ModelAPI;
+import com.kamwithk.ankiconnectandroid.flashcard_app.FlashcardApps;
 import com.kamwithk.ankiconnectandroid.request_parsers.NoteRequest;
 import com.kamwithk.ankiconnectandroid.request_parsers.Parser;
 import com.kamwithk.ankiconnectandroid.request_parsers.MediaRequest;
@@ -24,16 +25,22 @@ import java.util.Map;
 
 import static fi.iki.elonen.NanoHTTPD.newFixedLengthResponse;
 
+import android.content.Context;
 import android.util.Log;
 
 
 public class AnkiAPIRouting {
+    private static final String ACTION_VERSION = "version";
+    private static final String ACTION_MULTI = "multi";
+
+    private final Context context;
     private final IntegratedAPI integratedAPI;
     private final DeckAPI deckAPI;
     private final ModelAPI modelAPI;
     private final MediaAPI mediaAPI;
 
-    public AnkiAPIRouting(IntegratedAPI integratedAPI) {
+    public AnkiAPIRouting(IntegratedAPI integratedAPI, Context context) {
+        this.context = context;
         this.integratedAPI = integratedAPI;
         deckAPI = integratedAPI.deckAPI;
         modelAPI = integratedAPI.modelAPI;
@@ -41,8 +48,16 @@ public class AnkiAPIRouting {
     }
 
     private String findRoute(JsonObject raw_json) throws Exception {
-        switch (Parser.get_action(raw_json)) {
-            case "version":
+        String action = Parser.get_action(raw_json);
+
+        // Every other action reaches AnkiDroid: refuse if an untrusted app holds its provider.
+        // multi checks each of its actions.
+        if (!action.equals(ACTION_VERSION) && !action.equals(ACTION_MULTI)) {
+            FlashcardApps.requireAnkiDroid(context);
+        }
+
+        switch (action) {
+            case ACTION_VERSION:
                 return version();
             case "deckNames":
                 return deckNames();
@@ -70,7 +85,7 @@ public class AnkiAPIRouting {
                 return storeMediaFile(raw_json);
             case "notesInfo":
                 return notesInfo(raw_json);
-            case "multi":
+            case ACTION_MULTI:
                 JsonArray actions = Parser.getMultiActions(raw_json);
                 JsonArray results = new JsonArray();
 
