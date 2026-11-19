@@ -10,10 +10,6 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 public class FlashcardAppResolverTest {
     private static final String ANKIDROID_CERT = AnkiDroidCheck.RELEASE_CERT_SHA256;
@@ -21,13 +17,13 @@ public class FlashcardAppResolverTest {
     private static final String OTHER_CERT = "cc";
     private static final String SQUATTER = "com.example.squatter";
 
-    private FakeApps apps;
+    private FakeInstalledApps apps;
     private FakePins pins;
     private FlashcardAppResolver resolver;
 
     @Before
     public void setUp() {
-        apps = new FakeApps();
+        apps = new FakeInstalledApps();
         pins = new FakePins();
         resolver = new FlashcardAppResolver(apps, pins, AppBuild.RELEASE);
     }
@@ -42,20 +38,47 @@ public class FlashcardAppResolverTest {
     }
 
     @Test
-    public void ankiDroidOnlyIsUsedWithoutPromptAndPinned() {
-        apps.install(FlashcardApp.ANKIDROID, ANKIDROID_CERT);
+    public void ankiDroidOnlyIsUsedWithoutPromptOrPin() {
+        install(FlashcardApp.ANKIDROID, ANKIDROID_CERT);
 
         FlashcardAppResolver.Resolution resolution = resolver.resolve();
 
         assertEquals(FlashcardAppResolver.State.READY, resolution.state);
         assertEquals(FlashcardApp.ANKIDROID, resolution.app);
-        assertEquals(FlashcardApp.ANKIDROID, pins.pin.app);
-        assertEquals(ANKIDROID_CERT, pins.pin.certDigest);
+        assertNull(pins.pin);
+    }
+
+    @Test
+    public void ankiDroidWithoutReleaseKeyIsNoCandidate() {
+        install(FlashcardApp.ANKIDROID, OTHER_CERT);
+
+        assertEquals(FlashcardAppResolver.State.NONE_INSTALLED, resolver.resolve().state);
+        assertFalse(resolver.choose(FlashcardApp.ANKIDROID));
+        assertNull(pins.pin);
+    }
+
+    @Test
+    public void ankiDroidWithoutReleaseKeyIsUsedWhenDebuggable() {
+        install(FlashcardApp.ANKIDROID, OTHER_CERT);
+        resolver = new FlashcardAppResolver(apps, pins, AppBuild.DEBUGGABLE);
+
+        assertEquals(FlashcardApp.ANKIDROID, resolver.resolve().app);
+    }
+
+    @Test
+    public void ankiDroidWithoutReleaseKeyLeavesAnkiQuestToChoose() {
+        install(FlashcardApp.ANKIDROID, OTHER_CERT);
+        install(FlashcardApp.ANKIQUEST, ANKIQUEST_CERT);
+
+        FlashcardAppResolver.Resolution resolution = resolver.resolve();
+
+        assertEquals(FlashcardAppResolver.State.NEEDS_CHOICE, resolution.state);
+        assertEquals(Collections.singletonList(FlashcardApp.ANKIQUEST), resolution.candidates);
     }
 
     @Test
     public void ankiQuestOnlyNeedsExplicitChoice() {
-        apps.install(FlashcardApp.ANKIQUEST, ANKIQUEST_CERT);
+        install(FlashcardApp.ANKIQUEST, ANKIQUEST_CERT);
 
         FlashcardAppResolver.Resolution resolution = resolver.resolve();
 
@@ -72,8 +95,8 @@ public class FlashcardAppResolverTest {
 
     @Test
     public void bothInstalledDefaultsToAnkiDroid() {
-        apps.install(FlashcardApp.ANKIDROID, ANKIDROID_CERT);
-        apps.install(FlashcardApp.ANKIQUEST, ANKIQUEST_CERT);
+        install(FlashcardApp.ANKIDROID, ANKIDROID_CERT);
+        install(FlashcardApp.ANKIQUEST, ANKIQUEST_CERT);
 
         FlashcardAppResolver.Resolution resolution = resolver.resolve();
 
@@ -84,8 +107,8 @@ public class FlashcardAppResolverTest {
 
     @Test
     public void bothInstalledChoiceIsKept() {
-        apps.install(FlashcardApp.ANKIDROID, ANKIDROID_CERT);
-        apps.install(FlashcardApp.ANKIQUEST, ANKIQUEST_CERT);
+        install(FlashcardApp.ANKIDROID, ANKIDROID_CERT);
+        install(FlashcardApp.ANKIQUEST, ANKIQUEST_CERT);
 
         assertTrue(resolver.choose(FlashcardApp.ANKIQUEST));
 
@@ -93,57 +116,89 @@ public class FlashcardAppResolverTest {
     }
 
     @Test
-    public void chosenAppUninstalledFallsBackToDefault() {
-        apps.install(FlashcardApp.ANKIDROID, ANKIDROID_CERT);
-        apps.install(FlashcardApp.ANKIQUEST, ANKIQUEST_CERT);
+    public void choosingAnkiDroidDropsThePin() {
+        install(FlashcardApp.ANKIDROID, ANKIDROID_CERT);
+        install(FlashcardApp.ANKIQUEST, ANKIQUEST_CERT);
         resolver.choose(FlashcardApp.ANKIQUEST);
 
-        apps.uninstall(FlashcardApp.ANKIQUEST);
+        assertTrue(resolver.choose(FlashcardApp.ANKIDROID));
+
+        assertNull(pins.pin);
+        assertEquals(FlashcardApp.ANKIDROID, resolver.resolve().app);
+    }
+
+    @Test
+    public void chosenAppUninstalledFallsBackToAnkiDroid() {
+        install(FlashcardApp.ANKIDROID, ANKIDROID_CERT);
+        install(FlashcardApp.ANKIQUEST, ANKIQUEST_CERT);
+        resolver.choose(FlashcardApp.ANKIQUEST);
+
+        uninstall(FlashcardApp.ANKIQUEST);
         FlashcardAppResolver.Resolution resolution = resolver.resolve();
 
         assertEquals(FlashcardAppResolver.State.READY, resolution.state);
         assertEquals(FlashcardApp.ANKIDROID, resolution.app);
-        assertEquals(FlashcardApp.ANKIDROID, pins.pin.app);
+        assertNull(pins.pin);
     }
 
     @Test
-    public void chosenAppUninstalledWithoutDefaultIsNoneInstalled() {
-        apps.install(FlashcardApp.ANKIQUEST, ANKIQUEST_CERT);
+    public void chosenAppUninstalledWithoutAnkiDroidIsNoneInstalled() {
+        install(FlashcardApp.ANKIQUEST, ANKIQUEST_CERT);
         resolver.choose(FlashcardApp.ANKIQUEST);
 
-        apps.uninstall(FlashcardApp.ANKIQUEST);
+        uninstall(FlashcardApp.ANKIQUEST);
 
         assertEquals(FlashcardAppResolver.State.NONE_INSTALLED, resolver.resolve().state);
         assertNull(pins.pin);
     }
 
     @Test
-    public void certificateChangeResetsChoice() {
-        apps.install(FlashcardApp.ANKIDROID, ANKIDROID_CERT);
-        apps.install(FlashcardApp.ANKIQUEST, ANKIQUEST_CERT);
+    public void certificateChangeFallsBackToAnkiDroid() {
+        install(FlashcardApp.ANKIDROID, ANKIDROID_CERT);
+        install(FlashcardApp.ANKIQUEST, ANKIQUEST_CERT);
         resolver.choose(FlashcardApp.ANKIQUEST);
 
-        apps.install(FlashcardApp.ANKIQUEST, OTHER_CERT);
+        install(FlashcardApp.ANKIQUEST, OTHER_CERT);
+        FlashcardAppResolver.Resolution resolution = resolver.resolve();
+
+        assertEquals(FlashcardAppResolver.State.READY, resolution.state);
+        assertEquals(FlashcardApp.ANKIDROID, resolution.app);
+        assertNull(pins.pin);
+    }
+
+    @Test
+    public void certificateChangeWithoutAnkiDroidAsksAgain() {
+        install(FlashcardApp.ANKIQUEST, ANKIQUEST_CERT);
+        resolver.choose(FlashcardApp.ANKIQUEST);
+
+        install(FlashcardApp.ANKIQUEST, OTHER_CERT);
         FlashcardAppResolver.Resolution resolution = resolver.resolve();
 
         assertEquals(FlashcardAppResolver.State.NEEDS_CHOICE, resolution.state);
         assertNull(pins.pin);
+
+        // Picking it again trusts the new certificate
+        assertTrue(resolver.choose(FlashcardApp.ANKIQUEST));
+        assertEquals(OTHER_CERT, pins.pin.certDigest);
     }
 
     @Test
-    public void ankiDroidWithoutReleaseKeyIsNoCandidate() {
-        apps.install(FlashcardApp.ANKIDROID, OTHER_CERT);
+    public void certificateChangeWithUntrustedAnkiDroidAsksAgain() {
+        install(FlashcardApp.ANKIDROID, OTHER_CERT);
+        install(FlashcardApp.ANKIQUEST, ANKIQUEST_CERT);
+        resolver.choose(FlashcardApp.ANKIQUEST);
 
-        assertEquals(FlashcardAppResolver.State.NONE_INSTALLED, resolver.resolve().state);
-        assertFalse(resolver.choose(FlashcardApp.ANKIDROID));
+        install(FlashcardApp.ANKIQUEST, OTHER_CERT);
+
+        assertEquals(FlashcardAppResolver.State.NEEDS_CHOICE, resolver.resolve().state);
         assertNull(pins.pin);
     }
 
     @Test
     public void authorityHeldByUnexpectedPackageIsRejected() {
-        apps.install(FlashcardApp.ANKIDROID, ANKIDROID_CERT);
-        apps.installed.put(FlashcardApp.ANKIQUEST.packageName, Collections.singleton(ANKIQUEST_CERT));
-        apps.authorities.put(FlashcardApp.ANKIQUEST.authority, SQUATTER);
+        install(FlashcardApp.ANKIDROID, ANKIDROID_CERT);
+        install(FlashcardApp.ANKIQUEST, ANKIQUEST_CERT);
+        apps.squat(FlashcardApp.ANKIQUEST.authority, SQUATTER);
 
         FlashcardAppResolver.Resolution resolution = resolver.resolve();
 
@@ -153,7 +208,7 @@ public class FlashcardAppResolverTest {
 
     @Test
     public void authoritySquattedWhileAnkiDroidMissingIsRejected() {
-        apps.authorities.put(FlashcardApp.ANKIDROID.authority, SQUATTER);
+        apps.squat(FlashcardApp.ANKIDROID.authority, SQUATTER);
 
         assertEquals(FlashcardAppResolver.State.NONE_INSTALLED, resolver.resolve().state);
         assertFalse(resolver.choose(FlashcardApp.ANKIDROID));
@@ -162,36 +217,19 @@ public class FlashcardAppResolverTest {
 
     @Test
     public void unknownStoredAppIsDropped() {
-        apps.install(FlashcardApp.ANKIDROID, ANKIDROID_CERT);
+        install(FlashcardApp.ANKIDROID, ANKIDROID_CERT);
         pins.pin = new PinStore.Pin(null, "com.example.removed", OTHER_CERT);
 
         assertEquals(FlashcardApp.ANKIDROID, resolver.resolve().app);
-        assertEquals(FlashcardApp.ANKIDROID, pins.pin.app);
+        assertNull(pins.pin);
     }
 
-    private static final class FakeApps implements InstalledApps {
-        final Map<String, Set<String>> installed = new HashMap<>();
-        final Map<String, String> authorities = new HashMap<>();
+    private void install(FlashcardApp app, String cert) {
+        apps.install(app.packageName, app.authority, cert);
+    }
 
-        void install(FlashcardApp app, String cert) {
-            installed.put(app.packageName, new HashSet<>(Collections.singleton(cert)));
-            authorities.put(app.authority, app.packageName);
-        }
-
-        void uninstall(FlashcardApp app) {
-            installed.remove(app.packageName);
-            authorities.remove(app.authority);
-        }
-
-        @Override
-        public Set<String> signerDigests(String packageName) {
-            return installed.getOrDefault(packageName, Collections.emptySet());
-        }
-
-        @Override
-        public String authorityHolder(String authority) {
-            return authorities.get(authority);
-        }
+    private void uninstall(FlashcardApp app) {
+        apps.uninstall(app.packageName, app.authority);
     }
 
     private static final class FakePins implements PinStore {

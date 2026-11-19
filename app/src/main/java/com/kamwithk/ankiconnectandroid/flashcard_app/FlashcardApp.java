@@ -8,8 +8,6 @@ public enum FlashcardApp {
     ANKIDROID(AnkiDroidCheck.PACKAGE_NAME),
     ANKIQUEST("org.ankiquest.anki");
 
-    public static final FlashcardApp DEFAULT = ANKIDROID;
-
     public final String packageName;
     public final String authority;
     public final String permission;
