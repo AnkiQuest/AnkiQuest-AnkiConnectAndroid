@@ -22,6 +22,9 @@
     <queries>
         <package android:name="com.ichi2.anki" />
         <package android:name="org.ankiquest.anki" />
+        <!-- The authorities too, so the holder check sees whichever app holds one -->
+        <provider android:authorities="com.ichi2.anki.flashcards" />
+        <provider android:authorities="org.ankiquest.anki.flashcards" />
     </queries>
 
     <application
