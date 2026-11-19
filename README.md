@@ -33,7 +33,7 @@ It reimplements the core APIs used by Yomitan to work with [Ankidroid](https://g
 Here's how to set everything up from scratch (if you've already got Yomitan working, then skip to step 5):
 
 1. Install [Firefox Browser](https://play.google.com/store/apps/details?id=org.mozilla.firefox)
-2. Install [Ankidroid](https://play.google.com/store/apps/details?id=com.ichi2.anki)
+2. Install [Ankidroid](https://play.google.com/store/apps/details?id=com.ichi2.anki) (or AnkiQuest, an AnkiDroid fork: if both are installed, pick it under Settings → Flashcard app)
 3. Install Ankiconnect Android - Download from the [Releases Section](https://github.com/KamWithK/AnkiconnectAndroid/releases/latest) or from [IzzyOnDroid repo](https://apt.izzysoft.de/fdroid/index/apk/com.kamwithk.ankiconnectandroid)
 4. Start the Ankiconnect Android app, accept the permissions and hit start service
 5. Install the [Yomitan extension](https://addons.mozilla.org/en-US/firefox/addon/yomitan/) in Firefox Browser

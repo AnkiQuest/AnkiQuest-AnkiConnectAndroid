@@ -24,6 +24,9 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 
 import com.kamwithk.ankiconnectandroid.ankidroid_api.IntegratedAPI;
+import com.kamwithk.ankiconnectandroid.flashcard_app.FlashcardAppPicker;
+import com.kamwithk.ankiconnectandroid.flashcard_app.FlashcardAppResolver;
+import com.kamwithk.ankiconnectandroid.flashcard_app.FlashcardApps;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -66,7 +69,13 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.materialToolbar);
         setSupportActionBar(toolbar);
 
-        IntegratedAPI.authenticate(this);
+        // Ask for the flashcard app's permission; if AnkiDroid isn't there, ask which app to use
+        FlashcardAppResolver.Resolution resolution = FlashcardApps.resolver(this).resolve();
+        if (resolution.state == FlashcardAppResolver.State.READY) {
+            IntegratedAPI.authenticate(this, resolution.app);
+        } else if (resolution.state == FlashcardAppResolver.State.NEEDS_CHOICE) {
+            FlashcardAppPicker.show(this, app -> IntegratedAPI.authenticate(this, app));
+        }
 
         NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, "Ankiconnect Android", NotificationManager.IMPORTANCE_DEFAULT);
         notificationManager = getSystemService(NotificationManager.class);

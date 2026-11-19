@@ -1,16 +1,15 @@
 package com.kamwithk.ankiconnectandroid.ankidroid_api;
 
 import android.content.Context;
-import com.ichi2.anki.api.AddContentApi;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class DeckAPI {
-    private final AddContentApi api;
+    private final ProviderApi api;
 
     public DeckAPI(Context context) {
-        api = new AddContentApi(context);
+        api = new ProviderApi(context);
     }
 
     public String[] deckNames() throws Exception {

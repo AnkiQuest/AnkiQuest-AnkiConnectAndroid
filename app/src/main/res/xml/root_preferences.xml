@@ -6,6 +6,11 @@
 
         <Preference
                 app:iconSpaceReserved="false"
+                app:key="flashcard_app"
+                app:title="@string/flashcard_app_title" />
+
+        <Preference
+                app:iconSpaceReserved="false"
                 app:key="access_overlay_perms"
                 app:title="@string/settings_overlay_permissions_title"
                 app:summary="@string/settings_overlay_permissions_summary" />
