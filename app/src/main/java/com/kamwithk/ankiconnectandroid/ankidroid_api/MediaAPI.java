@@ -10,7 +10,6 @@ import android.util.Log;
 import androidx.core.content.FileProvider;
 import com.kamwithk.ankiconnectandroid.BuildConfig;
 import com.ichi2.anki.FlashCardsContract;
-import com.ichi2.anki.api.AddContentApi;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -22,11 +21,11 @@ import java.net.URL;
 
 public class MediaAPI {
     private Context context;
-    private final AddContentApi api;
+    private final ProviderApi api;
 
     public MediaAPI(Context context) {
         this.context = context;
-        api = new AddContentApi(context);
+        api = new ProviderApi(context);
     }
 
     /**
@@ -48,14 +47,14 @@ public class MediaAPI {
         }
 
         Uri file_uri = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID, file);
-        context.grantUriPermission("com.ichi2.anki", file_uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        context.grantUriPermission(api.packageName(), file_uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
         ContentValues contentValues = new ContentValues();
         contentValues.put(FlashCardsContract.AnkiMedia.FILE_URI, file_uri.toString());
         contentValues.put(FlashCardsContract.AnkiMedia.PREFERRED_NAME, lastPathSegment.replaceAll("\\..*", ""));
 
         ContentResolver contentResolver = context.getContentResolver();
-        Uri returnUri = contentResolver.insert(FlashCardsContract.AnkiMedia.CONTENT_URI, contentValues);
+        Uri returnUri = contentResolver.insert(api.mediaUri(), contentValues);
 
 //        Remove temporary file
         file.deleteOnExit();

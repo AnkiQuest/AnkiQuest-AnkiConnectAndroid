@@ -7,14 +7,13 @@ import android.net.Uri;
 import android.text.TextUtils;
 
 import com.ichi2.anki.FlashCardsContract;
-import com.ichi2.anki.api.AddContentApi;
 
 import java.util.*;
 
 public class NoteAPI {
     private Context context;
     private final ContentResolver resolver;
-    private final AddContentApi api;
+    private final ProviderApi api;
 
     private static final String[] MODEL_PROJECTION = {FlashCardsContract.Note.MID};
     private static final String[] NOTE_ID_PROJECTION = {FlashCardsContract.Note._ID};
@@ -23,7 +22,7 @@ public class NoteAPI {
     public NoteAPI(Context context) {
         this.context = context;
         this.resolver = context.getContentResolver();
-        api = new AddContentApi(context);
+        api = new ProviderApi(context);
     }
 
     static String escapeQueryStr(String s) {
@@ -54,7 +53,7 @@ public class NoteAPI {
     }
 
     public String[] getNoteFields(long note_id) throws Exception {
-        return api.getNote(note_id).getFields();
+        return api.getNoteFields(note_id);
     }
 
     public boolean updateNoteFields(long note_id, final Map<String, String> data) throws Exception {
@@ -78,7 +77,7 @@ public class NoteAPI {
         // Code copied/pasted from getNote() in AddContentAPI:
         // https://github.com/ankidroid/Anki-Android/blob/1711e56c2b5515ab89c3424b60e60867bb65d492/api/src/main/java/com/ichi2/anki/api/AddContentApi.kt#L244
 
-        Uri noteUri = Uri.withAppendedPath(FlashCardsContract.Note.CONTENT_URI, Long.toString(note_id));
+        Uri noteUri = Uri.withAppendedPath(api.notesUri(), Long.toString(note_id));
         Cursor cursor = this.resolver.query(noteUri, MODEL_PROJECTION, null, null, null);
 
         if (cursor == null) {
@@ -99,7 +98,7 @@ public class NoteAPI {
         ArrayList<Long> noteIds = new ArrayList<>();
 
         final Cursor cursor = this.resolver.query(
-                FlashCardsContract.Note.CONTENT_URI,
+                api.notesUri(),
                 NOTE_ID_PROJECTION,
                 query,
                 null,
@@ -199,7 +198,7 @@ public class NoteAPI {
         Map<Long, Model> cache = new HashMap<>();
 
         Cursor cursor = this.resolver.query(
-                FlashCardsContract.Note.CONTENT_URI,
+                api.notesUri(),
                 NOTES_INFO_PROJECTION,
                 nidQuery,
                 null,

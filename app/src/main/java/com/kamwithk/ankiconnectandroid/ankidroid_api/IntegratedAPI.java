@@ -16,11 +16,9 @@ import androidx.core.content.ContextCompat;
 import java.io.IOException;
 import java.util.*;
 
-import static com.ichi2.anki.api.AddContentApi.READ_WRITE_PERMISSION;
-
 import com.kamwithk.ankiconnectandroid.request_parsers.MediaRequest;
 import com.ichi2.anki.FlashCardsContract;
-import com.ichi2.anki.api.AddContentApi;
+import com.kamwithk.ankiconnectandroid.flashcard_app.FlashcardApp;
 import com.kamwithk.ankiconnectandroid.request_parsers.NoteRequest;
 
 public class IntegratedAPI {
@@ -29,7 +27,7 @@ public class IntegratedAPI {
     public final ModelAPI modelAPI;
     public final NoteAPI noteAPI;
     public final MediaAPI mediaAPI;
-    private final AddContentApi api; // TODO: Combine all API classes???
+    private final ProviderApi api; // TODO: Combine all API classes???
 
     //From anki-connect repo
     private static final String CAN_ADD_ERROR_REASON = "cannot create note because it is a duplicate";
@@ -41,14 +39,14 @@ public class IntegratedAPI {
         noteAPI = new NoteAPI(context);
         mediaAPI = new MediaAPI(context);
 
-        api = new AddContentApi(context);
+        api = new ProviderApi(context);
     }
 
-    public static void authenticate(Context context) {
-        int permission = ContextCompat.checkSelfPermission(context, READ_WRITE_PERMISSION);
+    public static void authenticate(Activity activity, FlashcardApp app) {
+        int permission = ContextCompat.checkSelfPermission(activity, app.permission);
 
         if (permission != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions((Activity)context, new String[]{READ_WRITE_PERMISSION}, 0);
+            ActivityCompat.requestPermissions(activity, new String[]{app.permission}, 0);
         }
     }
 
@@ -134,7 +132,7 @@ public class IntegratedAPI {
         );
 
         final Cursor cursor = context.getContentResolver().query(
-                FlashCardsContract.Note.CONTENT_URI_V2,
+                api.notesV2Uri(),
                 NOTE_PROJECTION,
                 selectionQuery,
                 null,
@@ -188,7 +186,7 @@ public class IntegratedAPI {
         // Need to search for all cards with the same note ID, and see if they exist in one of the decks.
         final String[] CARD_PROJECTION = {FlashCardsContract.Card.DECK_ID};
 
-        Uri noteUri = Uri.withAppendedPath(FlashCardsContract.Note.CONTENT_URI, Long.toString(noteId));
+        Uri noteUri = Uri.withAppendedPath(api.notesUri(), Long.toString(noteId));
         Uri cardUri = Uri.withAppendedPath(noteUri, "cards");
         Cursor cardCursor = context.getContentResolver().query(
                 cardUri,
@@ -370,7 +368,7 @@ public class IntegratedAPI {
         // https://github.com/ankidroid/Anki-Android/pull/11899
         Uri webpage = Uri.parse("anki://x-callback-url/browser?search=" + query);
         Intent webIntent = new Intent(Intent.ACTION_VIEW, webpage);
-        webIntent.setPackage("com.ichi2.anki");
+        webIntent.setPackage(api.packageName());
         // FLAG_ACTIVITY_NEW_TASK is needed in order to display the intent from a different app
         // FLAG_ACTIVITY_CLEAR_TOP and Intent.FLAG_ACTIVITY_TASK_ON_HOME is needed in order to not
         // cause a long chain of activities within Ankidroid

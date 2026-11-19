@@ -19,6 +19,10 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.kamwithk.ankiconnectandroid.ankidroid_api.IntegratedAPI;
+import com.kamwithk.ankiconnectandroid.flashcard_app.FlashcardAppPicker;
+import com.kamwithk.ankiconnectandroid.flashcard_app.FlashcardAppResolver;
+import com.kamwithk.ankiconnectandroid.flashcard_app.FlashcardApps;
 
 import org.jsoup.internal.StringUtil;
 
@@ -60,7 +64,20 @@ public class SettingsActivity extends AppCompatActivity {
             setPreferencesFromResource(R.xml.root_preferences, rootKey);
 
 
-            Preference preference = findPreference("access_overlay_perms");
+            Preference preference = findPreference("flashcard_app");
+            if (preference != null) {
+                // custom handler of preference: pick the flashcard app, then ask for its permission
+                updateFlashcardAppSummary(preference);
+                preference.setOnPreferenceClickListener(p -> {
+                    FlashcardAppPicker.show(requireActivity(), app -> {
+                        IntegratedAPI.authenticate(requireActivity(), app);
+                        updateFlashcardAppSummary(p);
+                    });
+                    return true;
+                });
+            }
+
+            preference = findPreference("access_overlay_perms");
             if (preference != null) {
                 // custom handler of preference: open permissions screen
                 preference.setOnPreferenceClickListener(p -> {
@@ -175,6 +192,15 @@ public class SettingsActivity extends AppCompatActivity {
                     }
                     return true;
                 });
+            }
+        }
+
+        private void updateFlashcardAppSummary(Preference preference) {
+            FlashcardAppResolver.Resolution resolution = FlashcardApps.resolver(requireContext()).resolve();
+            if (resolution.state == FlashcardAppResolver.State.READY) {
+                preference.setSummary(FlashcardAppPicker.label(requireContext().getPackageManager(), resolution.app));
+            } else {
+                preference.setSummary(R.string.flashcard_app_not_chosen);
             }
         }
     }
