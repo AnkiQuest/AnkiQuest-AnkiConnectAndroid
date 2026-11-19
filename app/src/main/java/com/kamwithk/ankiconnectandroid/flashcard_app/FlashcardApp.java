@@ -5,7 +5,7 @@ package com.kamwithk.ankiconnectandroid.flashcard_app;
  * Both use AnkiDroid's provider code, so only the names differ.
  */
 public enum FlashcardApp {
-    ANKIDROID("com.ichi2.anki"),
+    ANKIDROID(AnkiDroidCheck.PACKAGE_NAME),
     ANKIQUEST("org.ankiquest.anki");
 
     public static final FlashcardApp DEFAULT = ANKIDROID;

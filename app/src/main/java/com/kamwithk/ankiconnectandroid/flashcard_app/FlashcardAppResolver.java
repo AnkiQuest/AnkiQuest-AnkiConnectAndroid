@@ -10,7 +10,7 @@ import java.util.Set;
  *
  * Rules:
  * - A candidate is a known app that is installed and actually holds its own authority,
- *   so an app squatting the authority is rejected.
+ *   so an app squatting the authority is rejected. AnkiDroid must also pass AnkiDroidCheck.
  * - The stored choice is used only while its certificate still matches. If the certificate
  *   changed, the choice is dropped and the user asked again; if the app is gone, the
  *   choice is dropped and the default used.
@@ -36,10 +36,12 @@ public class FlashcardAppResolver {
 
     private final InstalledApps installedApps;
     private final PinStore pinStore;
+    private final AppBuild appBuild;
 
-    public FlashcardAppResolver(InstalledApps installedApps, PinStore pinStore) {
+    public FlashcardAppResolver(InstalledApps installedApps, PinStore pinStore, AppBuild appBuild) {
         this.installedApps = installedApps;
         this.pinStore = pinStore;
+        this.appBuild = appBuild;
     }
 
     /** Known apps that are installed and hold their own authority, in declaration order. */
@@ -91,6 +93,9 @@ public class FlashcardAppResolver {
     }
 
     private boolean isCandidate(FlashcardApp app) {
+        if (app == FlashcardApp.ANKIDROID) {
+            return AnkiDroidCheck.isTrusted(installedApps, appBuild);
+        }
         if (installedApps.signerDigests(app.packageName).isEmpty()) {
             return false;
         }

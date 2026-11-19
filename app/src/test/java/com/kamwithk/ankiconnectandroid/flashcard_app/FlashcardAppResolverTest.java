@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class FlashcardAppResolverTest {
-    private static final String ANKIDROID_CERT = "aa";
+    private static final String ANKIDROID_CERT = AnkiDroidCheck.RELEASE_CERT_SHA256;
     private static final String ANKIQUEST_CERT = "bb";
     private static final String OTHER_CERT = "cc";
     private static final String SQUATTER = "com.example.squatter";
@@ -29,7 +29,7 @@ public class FlashcardAppResolverTest {
     public void setUp() {
         apps = new FakeApps();
         pins = new FakePins();
-        resolver = new FlashcardAppResolver(apps, pins);
+        resolver = new FlashcardAppResolver(apps, pins, AppBuild.RELEASE);
     }
 
     @Test
@@ -131,19 +131,12 @@ public class FlashcardAppResolverTest {
     }
 
     @Test
-    public void ankiDroidCertificateChangeAsksAgain() {
-        apps.install(FlashcardApp.ANKIDROID, ANKIDROID_CERT);
-        resolver.resolve();
-
+    public void ankiDroidWithoutReleaseKeyIsNoCandidate() {
         apps.install(FlashcardApp.ANKIDROID, OTHER_CERT);
-        FlashcardAppResolver.Resolution resolution = resolver.resolve();
 
-        assertEquals(FlashcardAppResolver.State.NEEDS_CHOICE, resolution.state);
+        assertEquals(FlashcardAppResolver.State.NONE_INSTALLED, resolver.resolve().state);
+        assertFalse(resolver.choose(FlashcardApp.ANKIDROID));
         assertNull(pins.pin);
-
-        // Picking it again trusts the new certificate
-        assertTrue(resolver.choose(FlashcardApp.ANKIDROID));
-        assertEquals(OTHER_CERT, pins.pin.certDigest);
     }
 
     @Test
