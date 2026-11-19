@@ -6,7 +6,7 @@ import android.content.pm.ApplicationInfo;
 /** Entry point for the rest of the app: whether AnkiDroid's provider may be used right now. */
 public final class FlashcardApps {
     private static final String NOT_TRUSTED =
-            "AnkiDroid is not installed, or the installed app is not signed with AnkiDroid's release key";
+            "AnkiDroid is not installed, or the installed app is not signed with a release key of AnkiDroid (Google Play, F-Droid or GitHub)";
 
     private FlashcardApps() {
     }

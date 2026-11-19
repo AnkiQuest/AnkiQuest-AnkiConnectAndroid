@@ -26,6 +26,13 @@ public class AnkiDroidCheckTest {
     }
 
     @Test
+    public void fdroidAnkiDroidIsTrusted() {
+        installAnkiDroid(AnkiDroidCheck.FDROID_CERT_SHA256);
+
+        assertTrue(AnkiDroidCheck.isTrusted(apps, AppBuild.RELEASE));
+    }
+
+    @Test
     public void otherPackageHoldingAuthorityIsRejected() {
         installAnkiDroid(AnkiDroidCheck.RELEASE_CERT_SHA256);
         apps.squat(AnkiDroidCheck.AUTHORITY, SQUATTER);
