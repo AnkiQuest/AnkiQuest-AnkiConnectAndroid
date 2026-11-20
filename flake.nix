@@ -16,7 +16,7 @@
     };
 
     # What app/build.gradle compiles against; build tools are AGP 8.10's default.
-    compileSdk = "33";
+    compileSdk = "36";
     buildTools = "35.0.0";
 
     android = pkgs.androidenv.composeAndroidPackages {
