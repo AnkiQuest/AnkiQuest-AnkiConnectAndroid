@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 package com.kamwithk.ankiconnectandroid.ankidroid_api;
 
 import android.content.ContentResolver;
