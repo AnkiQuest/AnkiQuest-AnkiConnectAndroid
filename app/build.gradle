@@ -40,6 +40,17 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_9
         targetCompatibility JavaVersion.VERSION_1_9
     }
+
+    // AnkiQuest: -PabiSplits=true builds one APK per ABI and a universal one,
+    // as AnkiQuest-Dev's android-release workflow publishes them.
+    splits {
+        abi {
+            enable providers.gradleProperty("abiSplits").getOrNull() == "true"
+            reset()
+            include "arm64-v8a", "armeabi-v7a", "x86_64", "x86"
+            universalApk true
+        }
+    }
     namespace 'com.kamwithk.ankiconnectandroid'
 }
 
