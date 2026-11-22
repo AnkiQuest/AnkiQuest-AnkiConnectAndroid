@@ -2,6 +2,7 @@
 
 package com.kamwithk.ankiconnectandroid.flashcard_app;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -22,5 +23,15 @@ public class FlashcardAppManifestTest {
             assertTrue(app.packageName, manifest.contains("<package android:name=\"" + app.packageName + "\""));
             assertTrue(app.authority, manifest.contains("<provider android:authorities=\"" + app.authority + "\""));
         }
+    }
+
+    /** Every AnkiQuest build installs as org.ankiquest (AnkiQuest-Android#461) */
+    @Test
+    public void ankiQuestIsOrgAnkiquest() {
+        FlashcardApp app = FlashcardApp.ANKIQUEST;
+
+        assertEquals("org.ankiquest", app.packageName);
+        assertEquals("org.ankiquest.flashcards", app.authority);
+        assertEquals("org.ankiquest.permission.READ_WRITE_DATABASE", app.permission);
     }
 }
