@@ -1,4 +1,7 @@
-# Ankiconnect Android
+# AnkiQuest-AnkiConnectAndroid
+
+AnkiQuest's fork of [KamWithK/AnkiconnectAndroid](https://github.com/KamWithK/AnkiconnectAndroid);
+everything below is upstream's README.
 
 Ankiconnect Android allows you to utilize the standard Anki mining workflow on Android devices like phones and eReaders.
 Create Anki cards using [Yomitan](https://yomitan.wiki/) on [Firefox Browser](https://play.google.com/store/apps/details?id=org.mozilla.firefox) and add them straight into your Anki deck!
