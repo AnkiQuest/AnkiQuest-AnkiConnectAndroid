@@ -34,7 +34,7 @@ Here's how to set everything up from scratch (if you've already got Yomitan work
 
 1. Install [Firefox Browser](https://play.google.com/store/apps/details?id=org.mozilla.firefox)
 2. Install [Ankidroid](https://play.google.com/store/apps/details?id=com.ichi2.anki) (or AnkiQuest, an AnkiDroid fork: if both are installed, pick it under Settings → Flashcard app)
-3. Install Ankiconnect Android - Download from the [Releases Section](https://github.com/KamWithK/AnkiconnectAndroid/releases/latest) or from [IzzyOnDroid repo](https://apt.izzysoft.de/fdroid/index/apk/org.ankiquest.ankiconnectandroid)
+3. Install AnkiConnect Android - download the APK from the [releases page](https://github.com/AnkiQuest/AnkiQuest-AnkiConnectAndroid/releases/latest) and check `SHA256SUMS.txt`
 4. Start the Ankiconnect Android app, accept the permissions and hit start service
 5. Install the [Yomitan extension](https://addons.mozilla.org/en-US/firefox/addon/yomitan/) in Firefox Browser
 6. Configure Yomitan general settings
@@ -205,7 +205,7 @@ can be found within the above link.
 ### First Steps
 If you are having issues with anything, such as Yomitan being unable to connect to AnkiDroid, please ensure all these steps are followed before continuing:
 
-* Make sure the latest [app release](https://github.com/KamWithK/AnkiconnectAndroid/releases/latest) is installed.
+* Make sure the latest [app release](https://github.com/AnkiQuest/AnkiQuest-AnkiConnectAndroid/releases/latest) is installed.
 * If you imported the settings from the PC, try to use the sanitized version upon import, and manually re-add the handlebars after.
 * Double check that your Yomitan settings are correct. In particular, check that the `Configure Anki card format...` section, and the audio sources section is correct.
     * On rare occasions, settings exported from the computer and imported into your Android device may not work. Instead, try to reset Yomitan's settings and redo everything from scratch.
