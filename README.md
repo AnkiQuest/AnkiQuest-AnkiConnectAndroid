@@ -34,7 +34,7 @@ Here's how to set everything up from scratch (if you've already got Yomitan work
 
 1. Install [Firefox Browser](https://play.google.com/store/apps/details?id=org.mozilla.firefox)
 2. Install [Ankidroid](https://play.google.com/store/apps/details?id=com.ichi2.anki) (or AnkiQuest, an AnkiDroid fork: if both are installed, pick it under Settings → Flashcard app)
-3. Install Ankiconnect Android - Download from the [Releases Section](https://github.com/KamWithK/AnkiconnectAndroid/releases/latest) or from [IzzyOnDroid repo](https://apt.izzysoft.de/fdroid/index/apk/com.kamwithk.ankiconnectandroid)
+3. Install Ankiconnect Android - Download from the [Releases Section](https://github.com/KamWithK/AnkiconnectAndroid/releases/latest) or from [IzzyOnDroid repo](https://apt.izzysoft.de/fdroid/index/apk/org.ankiquest.ankiconnectandroid)
 4. Start the Ankiconnect Android app, accept the permissions and hit start service
 5. Install the [Yomitan extension](https://addons.mozilla.org/en-US/firefox/addon/yomitan/) in Firefox Browser
 6. Configure Yomitan general settings
@@ -141,13 +141,13 @@ can be found within the above link.
 
     * Locate AnkiConnect Android's data folder. By default, it is under:
         ```
-        (phone)/Android/data/com.kamwithk.ankiconnectandroid/files/
+        (phone)/Android/data/org.ankiquest.ankiconnectandroid/files/
         ```
         However, one can verify the location of the folder by going into the settings
         (gear at the top right corner), and tapping on `Print Local Audio Directory`.
         The following output specifies that the folder is indeed in the default position:
         ```
-        /storage/emulated/0/Android/data/com.kamwithk.ankiconnectandroid/files/
+        /storage/emulated/0/Android/data/org.ankiquest.ankiconnectandroid/files/
         ```
       
     * Alternatively locate a different folder. This will require later customisation.
@@ -161,7 +161,7 @@ can be found within the above link.
         * Do NOT copy the entire `user_files` folder.
         * After copying the file, this should result in the following:
             ```
-            /storage/emulated/0/Android/data/com.kamwithk.ankiconnectandroid/files/android.db
+            /storage/emulated/0/Android/data/org.ankiquest.ankiconnectandroid/files/android.db
             ```
     * If you chose a different folder than the default, additional customisation is necessary on the settings page.
         * Locate the `Local Audio Settings` section
@@ -169,7 +169,7 @@ can be found within the above link.
           * The first option will always be the internal storage. If you think you have more than one storage device, it may be that android treats it as one, in which case there will only be one option.
         * If you selected a different directory such as `Documents`, `Audio` etc, you may need to update the `Choose Local Audio Directory` setting.
           * If you selected a user-owned directory like the aforementioned `Documents`, `Audio` and similar, you may also need to allow `Manage All Files` permission for Ankiconnect Android.
-          * The `Manage All Files` permission is only necessary for folders outside of the app-owned `/Android/data/com.kamwithk.ankiconnectandroid/` directory.
+          * The `Manage All Files` permission is only necessary for folders outside of the app-owned `/Android/data/org.ankiquest.ankiconnectandroid/` directory.
         * If you make a mistake you can always reset the settings using `Reset Local Audio settings`. This will reset all the local audio settings and revert it to the default.
 
 4. Setup local audio on Firefox Browser's Yomitan. (Warning: this URL is different than the one on desktop!)
