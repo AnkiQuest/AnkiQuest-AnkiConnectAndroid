@@ -6,7 +6,7 @@ android {
     compileSdk 36
 
     defaultConfig {
-        applicationId "com.kamwithk.ankiconnectandroid"
+        applicationId "org.ankiquest.ankiconnectandroid"
         minSdk 26
         targetSdk 33
         versionCode 15
@@ -51,7 +51,7 @@ android {
             universalApk true
         }
     }
-    namespace 'com.kamwithk.ankiconnectandroid'
+    namespace 'org.ankiquest.ankiconnectandroid'
 }
 
 dependencies {
@@ -63,7 +63,6 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.15.0'
     implementation 'org.nanohttpd:nanohttpd:2.3.1'
     implementation 'org.nanohttpd:nanohttpd-nanolets:2.3.1'
-    implementation 'com.github.ankidroid:Anki-Android:2.17alpha14'
     implementation 'org.jsoup:jsoup:1.24.1'
     implementation 'androidx.preference:preference:1.2.1'
 
