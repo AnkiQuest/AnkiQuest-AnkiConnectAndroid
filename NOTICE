@@ -55,3 +55,17 @@ AGPL-3.0-or-later; the rest of each file keeps upstream's licence.
 
 The Gradle wrapper files (`gradlew`, `gradlew.bat`, `gradle/wrapper/`)
 are Gradle's, under the Apache License 2.0, updated by Dependabot.
+
+Vendored from AnkiQuest's own fork
+==================================
+
+1. FlashCardsContract.java
+   Source: https://github.com/AnkiQuest/AnkiQuest-Android/blob/master/api/src/main/java/com/ichi2/anki/FlashCardsContract.kt
+   Fork commit: bd339154fb535bfd386f0811711f9fae07c8de0a (2026-11-18)
+   Licence: offered as-is, copying and distribution with or without modification permitted
+   in any medium without royalty (the file's own notice, retained in the header).
+   Location in this project: app/src/main/java/org/ankiquest/ankiconnectandroid/ankidroid_api/FlashCardsContract.java
+   Only the column-name and segment constants are kept; the names are the wire contract
+   with the flashcards content provider of AnkiDroid and AnkiQuest. This replaces the
+   former `com.github.ankidroid:Anki-Android:2.17alpha14` JitPack artifact, which was
+   upstream's build rather than ours.

@@ -9,7 +9,7 @@ import android.net.Uri;
 import android.util.Log;
 import androidx.core.content.FileProvider;
 import org.ankiquest.ankiconnectandroid.BuildConfig;
-import com.ichi2.anki.FlashCardsContract;
+import org.ankiquest.ankiconnectandroid.ankidroid_api.FlashCardsContract;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;

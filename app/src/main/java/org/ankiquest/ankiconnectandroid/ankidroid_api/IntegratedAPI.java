@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.util.*;
 
 import org.ankiquest.ankiconnectandroid.request_parsers.MediaRequest;
-import com.ichi2.anki.FlashCardsContract;
+import org.ankiquest.ankiconnectandroid.ankidroid_api.FlashCardsContract;
 import org.ankiquest.ankiconnectandroid.flashcard_app.FlashcardApp;
 import org.ankiquest.ankiconnectandroid.request_parsers.NoteRequest;
 

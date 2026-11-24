@@ -8,7 +8,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 
-import com.ichi2.anki.FlashCardsContract;
+import org.ankiquest.ankiconnectandroid.ankidroid_api.FlashCardsContract;
 import org.ankiquest.ankiconnectandroid.flashcard_app.FlashcardApp;
 import org.ankiquest.ankiconnectandroid.flashcard_app.FlashcardApps;
 
