@@ -16,6 +16,7 @@ import java.util.Collections;
 public class FlashcardAppResolverTest {
     private static final String ANKIDROID_CERT = AnkiDroidCheck.RELEASE_CERT_SHA256;
     private static final String ANKIQUEST_CERT = "bb";
+    private static final String ANKIQUEST_RELEASED_CERT = "bd";
     private static final String OTHER_CERT = "cc";
     private static final String SQUATTER = "com.example.squatter";
 
@@ -96,17 +97,34 @@ public class FlashcardAppResolverTest {
     }
 
     @Test
-    public void pinOfAPackageNoLongerKnownAsksAgain() {
-        // Installs that picked released AnkiQuest (com.ichi2.anki.quest) stored ANKIQUEST_RELEASED,
-        // which FlashcardApp.fromName no longer knows.
-        pins.pin = new PinStore.Pin(FlashcardApp.fromName("ANKIQUEST_RELEASED"), "com.ichi2.anki.quest", "bd");
-        install(FlashcardApp.ANKIQUEST, ANKIQUEST_CERT);
+    public void releasedAnkiQuestOnlyNeedsExplicitChoice() {
+        install(FlashcardApp.ANKIQUEST_RELEASED, ANKIQUEST_RELEASED_CERT);
 
         FlashcardAppResolver.Resolution resolution = resolver.resolve();
 
         assertEquals(FlashcardAppResolver.State.NEEDS_CHOICE, resolution.state);
-        assertEquals(Collections.singletonList(FlashcardApp.ANKIQUEST), resolution.candidates);
+        assertEquals(Collections.singletonList(FlashcardApp.ANKIQUEST_RELEASED), resolution.candidates);
         assertNull(pins.pin);
+
+        assertTrue(resolver.choose(FlashcardApp.ANKIQUEST_RELEASED));
+        resolution = resolver.resolve();
+        assertEquals(FlashcardAppResolver.State.READY, resolution.state);
+        assertEquals(FlashcardApp.ANKIQUEST_RELEASED, resolution.app);
+        assertEquals(ANKIQUEST_RELEASED_CERT, pins.pin.certDigest);
+    }
+
+    @Test
+    public void bothAnkiQuestPackagesAreOfferedAndTheChoiceDecides() {
+        install(FlashcardApp.ANKIQUEST, ANKIQUEST_CERT);
+        install(FlashcardApp.ANKIQUEST_RELEASED, ANKIQUEST_RELEASED_CERT);
+
+        FlashcardAppResolver.Resolution resolution = resolver.resolve();
+
+        assertEquals(FlashcardAppResolver.State.NEEDS_CHOICE, resolution.state);
+        assertEquals(Arrays.asList(FlashcardApp.ANKIQUEST, FlashcardApp.ANKIQUEST_RELEASED), resolution.candidates);
+
+        assertTrue(resolver.choose(FlashcardApp.ANKIQUEST_RELEASED));
+        assertEquals(FlashcardApp.ANKIQUEST_RELEASED, resolver.resolve().app);
     }
 
     @Test
