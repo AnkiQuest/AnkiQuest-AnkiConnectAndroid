@@ -8,13 +8,7 @@ package org.ankiquest.ankiconnectandroid.flashcard_app;
  */
 public enum FlashcardApp {
     ANKIDROID(AnkiDroidCheck.PACKAGE_NAME),
-    ANKIQUEST("org.ankiquest.ankidroid"),
-
-    /**
-     * The package released AnkiQuest builds install as today, trusted like ANKIQUEST.
-     * Remove once its users have moved to org.ankiquest.ankidroid (AnkiQuest-Android#420).
-     */
-    ANKIQUEST_RELEASED("com.ichi2.anki.quest");
+    ANKIQUEST("org.ankiquest.ankidroid");
 
     public final String packageName;
     public final String authority;
